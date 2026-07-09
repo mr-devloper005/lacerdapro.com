@@ -1,57 +1,59 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowUpRight } from 'lucide-react'
+import { LogOut, Rocket } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/site-config'
-import { globalContent } from '@/editable/content/global.content'
 import { useEditableLocalAuthSession } from '@/editable/components/EditableLocalAuthForms'
 
 export function EditableFooter() {
-  const taskLinks = SITE_CONFIG.tasks.filter((task) => task.enabled)
-  const year = new Date().getFullYear()
   const { session, logout } = useEditableLocalAuthSession()
 
   return (
-    <footer className="border-t border-[var(--editable-border)] bg-[var(--editable-footer-bg)] text-[var(--editable-footer-text)]">
-      <div className="h-[2px] bg-[linear-gradient(90deg,transparent_0%,var(--slot4-accent)_50%,transparent_100%)]" />
-      <div className="mx-auto grid max-w-[var(--editable-container)] gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.2fr_1fr_1fr] lg:px-8">
-        <div>
-          <Link href="/" className="inline-flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center border border-[var(--slot4-accent)]/40 bg-[var(--slot4-surface-bg)]">
-              <img src="/favicon.png?v=20260413" alt={SITE_CONFIG.name} className="h-8 w-8 object-contain" />
-            </span>
-            <span className="editable-display text-xl font-semibold tracking-[0.01em]">{SITE_CONFIG.name}</span>
+    <footer className="bg-[#f7fafc] text-[var(--editable-footer-text)]">
+      <section className="border-y-4 border-[var(--slot4-accent)] bg-[#315cf4]">
+        <div className="mx-auto grid max-w-[var(--editable-container)] items-center gap-8 px-4 py-14 text-white sm:px-6 lg:grid-cols-[1fr_auto] lg:px-8">
+          <div>
+            <h2 className="text-3xl font-extrabold tracking-normal sm:text-4xl">Grow your presence with {SITE_CONFIG.name}</h2>
+            <p className="mt-4 max-w-3xl text-lg leading-8 text-white/78">
+              Share articles, publish professional profiles, and help readers find useful expertise in one connected place.
+            </p>
+          </div>
+          <Link href="/create" className="inline-flex items-center justify-center gap-3 rounded-md bg-[var(--slot4-accent)] px-10 py-4 text-base font-extrabold text-black shadow-[0_18px_45px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 hover:brightness-105">
+            <Rocket className="h-5 w-5" /> Create a post
           </Link>
-          <p className="mt-4 max-w-md text-sm leading-7 text-[var(--slot4-muted-text)]">{globalContent.footer?.description || SITE_CONFIG.description}</p>
+        </div>
+      </section>
+
+      <div className="mx-auto grid max-w-[var(--editable-container)] gap-10 px-4 py-10 text-center sm:px-6 lg:px-8">
+        <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-[#526173]">
+          <Link href="/" className="transition hover:text-[#0b62d8]">Home</Link>
+          <span>|</span>
+          <Link href="/about" className="transition hover:text-[#0b62d8]">About</Link>
+          <span>|</span>
+          <Link href="/contact" className="transition hover:text-[#0b62d8]">Contact</Link>
+          <span>|</span>
+          <Link href="/search" className="transition hover:text-[#0b62d8]">Search</Link>
+          {session ? (
+            <>
+              <span>|</span>
+              <button type="button" onClick={logout} className="inline-flex items-center gap-1.5 transition hover:text-[#0b62d8]"><LogOut className="h-4 w-4" /> Logout</button>
+            </>
+          ) : (
+            <>
+              <span>|</span>
+              <Link href="/login" className="transition hover:text-[#0b62d8]">Sign in</Link>
+              <span>|</span>
+              <Link href="/signup" className="transition hover:text-[#0b62d8]">Sign up</Link>
+            </>
+          )}
         </div>
 
         <div>
-          <h3 className="text-[10px] font-semibold uppercase tracking-[0.26em] text-[var(--slot4-accent)]">Explore</h3>
-          <div className="mt-4 grid gap-2">
-            {taskLinks.map((task) => (
-              <Link key={task.key} href={task.route} className="inline-flex items-center gap-2 text-sm font-medium text-[var(--slot4-muted-text)] transition hover:text-[var(--slot4-page-text)]">
-                {task.label} <ArrowUpRight className="h-3.5 w-3.5" />
-              </Link>
-            ))}
-          </div>
+          <Link href="/" className="inline-flex flex-col items-center">
+            <img src="/favicon.png?v=20260413" alt={SITE_CONFIG.name} className="h-16 w-16 object-contain" />
+            <span className="mt-2 text-2xl font-extrabold tracking-normal text-[#2f3640]">{SITE_CONFIG.name}</span>
+          </Link>
         </div>
-
-        <div>
-          <h3 className="text-[10px] font-semibold uppercase tracking-[0.26em] text-[var(--slot4-accent)]">Site</h3>
-          <div className="mt-4 grid gap-2">
-            {[
-              ['About', '/about'],
-              ['Contact', '/contact'],
-              ...(session ? [['Create', '/create']] : [['Login', '/login'], ['Sign up', '/signup']]),
-            ].map(([label, href]) => (
-              <Link key={href} href={href} className="text-sm font-medium text-[var(--slot4-muted-text)] transition hover:text-[var(--slot4-page-text)]">{label}</Link>
-            ))}
-            {session ? <button type="button" onClick={logout} className="text-left text-sm font-medium text-[var(--slot4-muted-text)] transition hover:text-[var(--slot4-page-text)]">Logout</button> : null}
-          </div>
-        </div>
-      </div>
-      <div className="border-t border-[var(--editable-border)] px-4 py-5 text-center text-xs font-medium tracking-[0.12em] text-[var(--slot4-muted-text)]">
-        © {year} {SITE_CONFIG.name}. All rights reserved.
       </div>
     </footer>
   )

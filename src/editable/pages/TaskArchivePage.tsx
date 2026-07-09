@@ -9,6 +9,7 @@ import { taskPageMetadata } from '@/config/site.content'
 import { taskPageVoices } from '@/editable/content/task-pages.content'
 import { EditableSiteShell } from '@/editable/shell/EditableSiteShell'
 import { getTaskTheme, taskThemeStyle } from '@/editable/theme/task-themes'
+import { Ads } from '@/lib/ads'
 
 export const revalidate = 3
 
@@ -68,6 +69,14 @@ const taskGrid: Record<TaskKey, string> = {
 // Shared premium surface: hairline border, soft radius, smooth lift on hover.
 const cardBase = 'group block rounded-[var(--tk-radius)] border border-[var(--tk-line)] bg-[var(--tk-surface)] transition duration-500 hover:-translate-y-1.5 hover:shadow-[0_32px_72px_rgba(15,23,42,0.14)]'
 
+function archiveAdSlots(task: TaskKey): [string, string] {
+  if (task === 'article') return ['header', 'in-feed']
+  if (task === 'profile') return ['header', 'sidebar']
+  if (task === 'pdf') return ['in-feed', 'article-bottom']
+  if (task === 'image') return ['header', 'footer']
+  return ['header', 'article-bottom']
+}
+
 export async function EditableTaskArchiveRoute({
   task,
   searchParams,
@@ -92,11 +101,14 @@ export function TaskArchiveView({ task, posts, pagination, category, basePath }:
   const page = pagination.page || 1
   const label = taskConfig?.label || task
   const categoryLabel = category === 'all' ? 'All categories' : CATEGORY_OPTIONS.find((item) => item.slug === category)?.name || category
+  const [topAd, midAd] = archiveAdSlots(task)
+  const focusedTask = task === 'article' || task === 'profile'
 
   return (
     <EditableSiteShell>
       <main style={taskThemeStyle(task)} className="min-h-screen bg-[var(--tk-bg)] text-[var(--tk-text)]">
-        <header className="relative overflow-hidden border-b border-[var(--tk-line)]">
+        <header className={`relative overflow-hidden border-b border-[var(--tk-line)] ${focusedTask ? 'editable-network-bg text-white' : ''}`}>
+          {focusedTask ? <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,13,47,0.97),rgba(7,25,66,0.82))]" /> : null}
           <div className="pointer-events-none absolute inset-x-0 -top-40 h-96 bg-[radial-gradient(60%_60%_at_50%_0%,var(--tk-glow),transparent_70%)]" />
           <div className="relative mx-auto max-w-[var(--editable-container)] px-6 py-20 sm:py-28 lg:px-8">
             <div className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.34em] text-[var(--tk-accent)]">
@@ -107,11 +119,11 @@ export function TaskArchiveView({ task, posts, pagination, category, basePath }:
             <h1 className="editable-display mt-6 max-w-3xl text-balance text-[2.5rem] font-semibold leading-[1.06] tracking-[-0.03em] sm:text-5xl lg:text-6xl">
               {voice?.headline || `Browse ${label}`}
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--tk-muted)]">{voice?.description || theme.note}</p>
+            <p className={`mt-6 max-w-2xl text-lg leading-8 ${focusedTask ? 'text-white/75' : 'text-[var(--tk-muted)]'}`}>{voice?.description || theme.note}</p>
             {voice?.chips?.length ? (
               <div className="mt-8 flex flex-wrap gap-2.5">
                 {voice.chips.map((chip) => (
-                  <span key={chip} className="rounded-full border border-[var(--tk-line)] bg-[var(--tk-surface)] px-3.5 py-1.5 text-xs font-medium text-[var(--tk-muted)]">{chip}</span>
+                  <span key={chip} className={`rounded-md border px-3.5 py-1.5 text-xs font-medium ${focusedTask ? 'border-white/20 bg-white/10 text-white/80' : 'border-[var(--tk-line)] bg-[var(--tk-surface)] text-[var(--tk-muted)]'}`}>{chip}</span>
                 ))}
               </div>
             ) : null}
@@ -139,6 +151,12 @@ export function TaskArchiveView({ task, posts, pagination, category, basePath }:
           </div>
         </header>
 
+        {task === 'profile' || !focusedTask ? (
+          <div className="mx-auto max-w-6xl px-4 py-7">
+            <Ads slot={task === 'profile' ? 'header' : topAd} showLabel eager className="mx-auto w-full" />
+          </div>
+        ) : null}
+
         <section className="mx-auto max-w-[var(--editable-container)] px-6 py-16 sm:py-20 lg:px-8">
           {posts.length ? (
             <div className={taskGrid[task]}>
@@ -159,7 +177,19 @@ export function TaskArchiveView({ task, posts, pagination, category, basePath }:
               {pagination.hasNextPage ? <Link href={pageHref(basePath, category, page + 1)} className="rounded-full border border-[var(--tk-line)] px-5 py-2.5 font-medium transition hover:border-[var(--tk-accent)]">Next</Link> : null}
             </nav>
           ) : null}
+
+          {task === 'article' ? (
+            <div className="mx-auto mt-16 max-w-6xl">
+              <Ads slot="in-feed" showLabel eager className="mx-auto w-full" />
+            </div>
+          ) : null}
         </section>
+
+        {!focusedTask ? (
+          <div className="mx-auto max-w-6xl px-4 py-6">
+            <Ads slot={midAd} showLabel className="mx-auto w-full" />
+          </div>
+        ) : null}
       </main>
     </EditableSiteShell>
   )

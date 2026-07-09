@@ -25,10 +25,8 @@ body {
 }
 
 .editable-site-root {
-  /* Yelp-style clean sans, used for both display and body. */
   --editable-font-display: 'Inter', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
   --editable-font-body: 'Inter', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
-  /* Premium easing curve used across every hover + transition. */
   --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
   font-family: var(--editable-font-body);
 }
@@ -97,8 +95,41 @@ body {
 }
 
 ::selection {
-  background: color-mix(in oklab, var(--slot4-accent-fill) 28%, transparent);
-  color: var(--slot4-page-text);
+  background: #0b62d8;
+  color: #ffffff;
+}
+
+.editable-network-bg {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(0, 214, 255, 0.9) 0 3px, transparent 4px),
+    radial-gradient(circle at 42% 58%, rgba(248, 197, 55, 0.95) 0 3px, transparent 4px),
+    radial-gradient(circle at 70% 28%, rgba(0, 214, 255, 0.85) 0 3px, transparent 4px),
+    radial-gradient(circle at 86% 70%, rgba(248, 197, 55, 0.95) 0 3px, transparent 4px),
+    linear-gradient(120deg, rgba(10, 31, 78, 0.98), rgba(6, 14, 48, 0.94)),
+    repeating-linear-gradient(35deg, rgba(0, 213, 255, 0.28) 0 1px, transparent 1px 90px),
+    repeating-linear-gradient(145deg, rgba(0, 213, 255, 0.18) 0 1px, transparent 1px 120px);
+}
+
+.editable-auto-rail {
+  animation: editable-rail 28s linear infinite;
+}
+
+.editable-auto-rail:hover {
+  animation-play-state: paused;
+}
+
+@keyframes editable-rail {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.editable-float {
+  animation: editable-float 5s ease-in-out infinite;
+}
+
+@keyframes editable-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 ::-webkit-scrollbar-track {
